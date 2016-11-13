@@ -248,7 +248,29 @@ def pre_lpSolver():
     h = np.zeros((np.shape(R_mat)[0], 1))
     alpha[8][0] = 1.0
 
+def calc_entropy(x_mat):
+    count = 0
+    policy = np.zeros(np.shape(R_mat)[0])
+    for i in range(np.shape(A_mat)[0]):
+        if i == 3 or i == 7:
+            policy[count] = 1
+            count += 1
+        else:
+            temp = 0
+            for j in range(4):
+                temp += x_mat[count + j]
+            for j in range(4):
+                policy[count + j] = x_mat[count + j]/temp
+            count += 4
+    entropy = 0
+    print(policy)
+    for i in range(len(policy)):
+        entropy += -1 * policy[i] * np.log(policy[i])
+
+    print('Using additive entropy matrix, entropy obtained', entropy)
+
 pre_lpSolver()
-brlp(0.4)
+x_mat = brlp(0.4)
+calc_entropy(x_mat)
 # R_mat 1x42
 # A_mat 12x42

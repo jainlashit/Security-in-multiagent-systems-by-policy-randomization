@@ -200,6 +200,30 @@ class Driver:
     a.generateLPAc()
     # print a.states[0].transition
 
+
+
+def calc_entropy(x_mat):
+    count = 0
+    policy = np.zeros(np.shape(R_mat)[0])
+    for i in range(np.shape(A_mat)[0]):
+        if i == 3 or i == 7:
+            policy[count] = 1
+            count += 1
+        else:
+            temp = 0
+            for j in range(4):
+                temp += x_mat[count + j]
+            for j in range(4):
+                policy[count + j] = x_mat[count + j]/temp
+            count += 4
+    entropy = 0
+    # print(policy)
+    for i in range(len(policy)):
+        entropy += -1 * policy[i] * np.log(policy[i])
+
+    print('Using additive entropy matrix, entropy obtained', entropy)
+
+
 # R_mat 1x42
 # A_mat 12x42
 R_mat = -1 * np.array(R_mat)[np.newaxis].T
@@ -220,12 +244,11 @@ x_mat = np.array(sol['x'])
 Ran_X = np.array(Ran_X)[np.newaxis].T
 optimal_solution  = -1 * np.dot(R_mat.T, x_mat)[0][0]
 average_solution = -1 * np.dot(R_mat.T, Ran_X)[0][0]
-Emin  = 0.45
+Emin  = 0.7
 beta = (optimal_solution - Emin)/(optimal_solution - average_solution)
-#print "---------"+str(beta)
-X_crlp = (np.add((1-beta)*x_mat, beta*Ran_X))
-print X_crlp
+X_crlp = np.add((1-beta)*x_mat, beta*Ran_X)
 
-crlp_solution = -1 * np.dot(R_mat.T, X_crlp)
+crlp_solution = -1 * np.dot(R_mat.T, X_crlp)[0][0]
+calc_entropy(X_crlp)
 
-print(crlp_solution) 
+print "Reward obtained :", crlp_solution
